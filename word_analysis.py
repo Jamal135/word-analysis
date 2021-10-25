@@ -1,6 +1,4 @@
 from collections import defaultdict
-import json
-
 
 def load_words(textfile_name):
     ''' Returns: Loaded list of words from txt. '''
@@ -12,38 +10,31 @@ def load_words(textfile_name):
     textfile.close
     return wordlist
 
-
 def dictionary_build(wordlist):
-    ''' Returns: Dictionary of dictionaries, word length -> word position. '''
-    length_longest_word = len(max(wordlist, key=len))
-    length_dictionary = {str(i+1): {str(j+1): [] for j in range(i+1)}
-                         for i in range(length_longest_word)}
+    ''' Returns: Dictionary tree number words. '''
+    data = defaultdict(int)
     for word in wordlist:
-        length = len(word)
-        for position in range(length):
-            length_dictionary[str(length)][str(
-                position + 1)].append(word[position])
-    return length_dictionary
+        for position, letter in enumerate(word):
+            if position == 0:
+                previous = ""
+            else:
+                previous = word[:position]
+            data[len(word), position, previous, letter] += 1
+    return data
 
-
-def alt_dictionary(wordlist):
-    data = {}
-    for word in wordlist:
-        view = data
-        for letter in word:
-            if letter not in view:
-                view[letter] = {"count": 0, "cross": 0}
-            view[letter]["cross"] += 1
-            view = view[letter]
-        view["count"] += 1
-    print(data)
-    print(data["a"]["l"]["p"]["h"]["a"])
+def probability(input_data, length, position, previous):
+    ''' Returns: Probability each letter given arguments. '''
+    characters = "abcdefghijklmnopqrstuvwxyz"
+    data = defaultdict(int)
+    for letter in characters:
+        data[letter] = input_data[length, position, previous, letter]
+    return data
 
 def word_analysis(textfile_name):
     ''' Returns: . '''
     wordlist = load_words(textfile_name)
-    length_dictionary = alt_dictionary(wordlist)
-    print(json.dumps(length_dictionary, indent=2))
-
+    word_dictionary = dictionary_build(wordlist)
+    letter_probability = probability(word_dictionary, 5, 0, "")
+    print(letter_probability)
 
 word_analysis("corncob_lowercase")
