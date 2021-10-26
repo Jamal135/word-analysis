@@ -1,4 +1,5 @@
 from collections import defaultdict
+from re import search
 
 def load_words(textfile_name):
     ''' Returns: Loaded list of words from txt. '''
@@ -11,15 +12,17 @@ def load_words(textfile_name):
     return wordlist
 
 def dictionary_build(wordlist):
-    ''' Returns: Dictionary tree number words. '''
+    ''' Returns: Dictionary tree next letter frequency. '''
     data = defaultdict(int)
-    for word in wordlist:
+    for word in ['time', 'times']:
         for position, letter in enumerate(word):
-            if position == 0:
-                previous = ""
-            else:
-                previous = word[:position]
-            data[len(word), position, previous, letter] += 1
+            previous = word[:position + 1]
+            for point, _ in enumerate(previous):
+                data[len(word), position, previous[:point], letter] += 1
+                #data[len(word), "", previous[:point], letter] += 1
+                #data["", position, previous[:point], letter] += 1
+                #data["", "", previous[:point], letter] += 1
+    print(data)
     return data
 
 def probability(input_data, length, position, previous):
@@ -34,7 +37,11 @@ def word_analysis(textfile_name):
     ''' Returns: . '''
     wordlist = load_words(textfile_name)
     word_dictionary = dictionary_build(wordlist)
-    letter_probability = probability(word_dictionary, 5, 0, "")
+    letter_probability = probability(word_dictionary, 6, 1, 'a')
+    print(letter_probability)
+    letter_probability = probability(word_dictionary, "", 2, 'ti')
+    print(letter_probability)
+    letter_probability = probability(word_dictionary, "", "", 'ti')
     print(letter_probability)
 
 word_analysis("corncob_lowercase")
