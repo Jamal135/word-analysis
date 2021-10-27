@@ -62,5 +62,3 @@ def word_analysis(txt_name: str, length: list, position: list, previous: list):
     dataframe = dataframe_build(word_dictionary)
     cut_dataframe = dataframe_extract(dataframe, length, position, previous)
     return frequency(cut_dataframe)
-
-print(word_analysis("corncob_lowercase", [], [2], ["ve"]))
