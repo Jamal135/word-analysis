@@ -55,10 +55,12 @@ def frequency(dataframe):
         letter_data[letter] += round((100/total_count)*count, 2)
     return (sorted(letter_data.items(), key = lambda ab:(ab[1], ab[0]), reverse=True)) 
 
-def word_analysis(txt_name: str, length: list, position: list, previous: list):
+def word_analysis(length: list, position: list, previous: list, txt_name: str = "cl"):
     ''' Returns: The percentage chance of each next letter given arguments. '''
     wordlist = load_words(txt_name)
     word_dictionary = dictionary_build(wordlist)
     dataframe = dataframe_build(word_dictionary)
     cut_dataframe = dataframe_extract(dataframe, length, position, previous)
     return frequency(cut_dataframe)
+
+print(word_analysis([5,6,7,8], [1], ["a"]))
