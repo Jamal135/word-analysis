@@ -62,5 +62,3 @@ def word_analysis(length: list, position: list, previous: list, txt_name: str = 
     dataframe = dataframe_build(word_dictionary)
     cut_dataframe = dataframe_extract(dataframe, length, position, previous)
     return frequency(cut_dataframe)
-
-print(word_analysis([5,6,7,8], [1], ["a"]))
