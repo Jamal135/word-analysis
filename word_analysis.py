@@ -1,9 +1,9 @@
 from collections import defaultdict
-from re import search
+from pandas import DataFrame, Series
 
-def load_words(textfile_name):
+def load_words(txt_name: str):
     ''' Returns: Loaded list of words from txt. '''
-    textfile = open(textfile_name + ".txt", "r")
+    textfile = open(txt_name + ".txt", "r")
     wordlist = []
     for line in textfile:
         stripped_line = line.strip()
@@ -11,37 +11,55 @@ def load_words(textfile_name):
     textfile.close
     return wordlist
 
-def dictionary_build(wordlist):
+def dictionary_build(wordlist: list):
     ''' Returns: Dictionary tree next letter frequency. '''
     data = defaultdict(int)
-    for word in ['time', 'times']:
+    for word in wordlist:
         for position, letter in enumerate(word):
             previous = word[:position + 1]
+            length = len(word)
             for point, _ in enumerate(previous):
-                data[len(word), position, previous[:point], letter] += 1
-                #data[len(word), "", previous[:point], letter] += 1
-                #data["", position, previous[:point], letter] += 1
-                #data["", "", previous[:point], letter] += 1
-    print(data)
+                segment = previous[point:position]
+                data[length, position, segment, letter] += 1
     return data
 
-def probability(input_data, length, position, previous):
-    ''' Returns: Probability each letter given arguments. '''
+def dataframe_build(data: dict):
+    ''' Returns: Built and named dataframe from dictionary. '''
+    dataframe = DataFrame.from_records(Series(data).reset_index())
+    dataframe.rename(columns={'level_0': 'Length', 'level_1': 'Position',
+                              'level_2': 'Previous', 'level_3': 'Letter',
+                              0: 'Count'}, inplace=True)
+    return dataframe
+
+def dataframe_extract(dataframe, length: list, position: list, previous: list):
+    ''' Returns: Dataframe cut to desired rows. '''
+    if length == []:
+        length = dataframe["Length"].unique()
+    if position == []:
+        position = dataframe["Position"].unique()
+    if previous == []:
+        previous = dataframe["Previous"].unique()
+    dataframe = dataframe[dataframe["Length"].isin(length) &
+                          dataframe["Position"].isin(position) &
+                          dataframe["Previous"].isin(previous)]
+    return dataframe
+
+def frequency(dataframe):
+    ''' Returns: Calculated frequency of each letter. '''
     characters = "abcdefghijklmnopqrstuvwxyz"
-    data = defaultdict(int)
+    letter_data = defaultdict(int)
     for letter in characters:
-        data[letter] = input_data[length, position, previous, letter]
-    return data
+        rows = dataframe[dataframe["Letter"].isin([letter])]
+        count = sum(rows['Count'])
+        letter_data[letter] += count
+    return sorted(letter_data.items(), key=lambda x: x[1], reverse=True)
 
-def word_analysis(textfile_name):
+def word_analysis(txt_name: str, length: list, position: list, previous: list):
     ''' Returns: . '''
-    wordlist = load_words(textfile_name)
+    wordlist = load_words(txt_name)
     word_dictionary = dictionary_build(wordlist)
-    letter_probability = probability(word_dictionary, 6, 1, 'a')
-    print(letter_probability)
-    letter_probability = probability(word_dictionary, "", 2, 'ti')
-    print(letter_probability)
-    letter_probability = probability(word_dictionary, "", "", 'ti')
-    print(letter_probability)
+    dataframe = dataframe_build(word_dictionary)
+    cut_dataframe = dataframe_extract(dataframe, length, position, previous)
+    return frequency(cut_dataframe)
 
-word_analysis("corncob_lowercase")
+print(word_analysis("corncob_lowercase", [], [], []))
