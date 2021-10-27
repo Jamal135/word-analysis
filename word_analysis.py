@@ -1,5 +1,5 @@
-from collections import defaultdict
 from pandas import DataFrame, Series
+from collections import defaultdict
 
 def load_words(txt_name: str):
     ''' Returns: Loaded list of words from txt. '''
@@ -45,21 +45,22 @@ def dataframe_extract(dataframe, length: list, position: list, previous: list):
     return dataframe
 
 def frequency(dataframe):
-    ''' Returns: Calculated frequency of each letter. '''
+    ''' Returns: Sorted count and probability of each letter. '''
     characters = "abcdefghijklmnopqrstuvwxyz"
     letter_data = defaultdict(int)
+    total_count = dataframe["Count"].sum()
     for letter in characters:
         rows = dataframe[dataframe["Letter"].isin([letter])]
         count = sum(rows['Count'])
-        letter_data[letter] += count
-    return sorted(letter_data.items(), key=lambda x: x[1], reverse=True)
+        letter_data[letter] += round((100/total_count)*count, 2)
+    return (sorted(letter_data.items(), key = lambda ab:(ab[1], ab[0]), reverse=True)) 
 
 def word_analysis(txt_name: str, length: list, position: list, previous: list):
-    ''' Returns: . '''
+    ''' Returns: The percentage chance of each next letter given arguments. '''
     wordlist = load_words(txt_name)
     word_dictionary = dictionary_build(wordlist)
     dataframe = dataframe_build(word_dictionary)
     cut_dataframe = dataframe_extract(dataframe, length, position, previous)
     return frequency(cut_dataframe)
 
-print(word_analysis("corncob_lowercase", [], [], []))
+print(word_analysis("corncob_lowercase", [], [2], ["ve"]))
