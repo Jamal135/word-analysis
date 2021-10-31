@@ -49,6 +49,8 @@ def frequency(dataframe):
     characters = "abcdefghijklmnopqrstuvwxyz"
     letter_data = defaultdict(int)
     total_count = dataframe["Count"].sum()
+    if total_count == 0: 
+        return None
     for letter in characters:
         rows = dataframe[dataframe["Letter"].isin([letter])]
         count = sum(rows['Count'])
