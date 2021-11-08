@@ -54,7 +54,7 @@ def frequency(dataframe):
     for letter in characters:
         rows = dataframe[dataframe["Letter"].isin([letter])]
         count = sum(rows['Count'])
-        letter_data[letter] += round((100/total_count)*count, 2)
+        letter_data[letter] += round((1/total_count)*count, 4)
     return (sorted(letter_data.items(), key = lambda ab:(ab[1], ab[0]), reverse=True)) 
 
 def word_analysis(length: list, position: list, previous: list, txt_name: str = "cl"):
