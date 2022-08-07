@@ -2,8 +2,8 @@ from pandas import DataFrame, Series
 from collections import defaultdict
 
 def load_words(txt_name: str):
-    ''' Returns: Loaded list of words from txt. '''
-    textfile = open(txt_name + ".txt", "r")
+    """ Returns: Loaded list of words from txt. """
+    textfile = open(f"{txt_name}.txt", "r")
     wordlist = []
     for line in textfile:
         stripped_line = line.strip()
@@ -33,11 +33,11 @@ def dataframe_build(data: dict):
 
 def dataframe_extract(dataframe, length: list, position: list, previous: list):
     ''' Returns: Dataframe cut to desired rows. '''
-    if length == []:
+    if not length:
         length = dataframe["Length"].unique()
-    if position == []:
+    if not position:
         position = dataframe["Position"].unique()
-    if previous == []:
+    if not previous:
         previous = dataframe["Previous"].unique()
     dataframe = dataframe[dataframe["Length"].isin(length) &
                           dataframe["Position"].isin(position) &
