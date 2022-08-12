@@ -18,11 +18,11 @@ The following arguments can be provided when calling the word_analysis function:
 * Position: An integer list describing the index position within the word.
 * Previous: A string list describing which previous characters must exist.
 
-User beware, this code currently has no error correction and it is on you to provide correct arguments. Examples include, position index should not exceed minimum length input minus one and an empty string should never be provided for the previous input.
+User beware, this code currently has no error correction and it is on you to provide correct arguments.
 
 ## No Arguments:
 
-Providing no argument for input means any value is allowed for that input. For example, no argument for length means all words from the shortest length to the longest will be included in the letter probability calculations. In the case of 
+Providing no argument for input means any value is allowed for that input. For example, no argument for length means all words from the shortest length to the longest will be included in the letter probability calculations. Note, using words_short.csv (built from words_short.csv).
 
 ```python
 word_analysis([], [], [])
@@ -35,7 +35,7 @@ Output:
 
 ## Single Arguments:
 
-Given the provided arguments, we are calculating the most likely next letter given the word is five characters long, this letter is in the fifth position, and the previous two letters were "ba". In this case, "ba" must form the third and four letter (in that order) of any word for it to be included in the probability calculation. Additionally, that word must be exactly five characters long. Note: position starts at zero, so the fourth position is the fifth character.
+Given the provided arguments, we are calculating the most likely next letter given the word is five characters long, this letter is in the fifth position, and the previous two letters were "ba". In this case, "ba" must form the third and fourth letters (in that order) of any word for it to be included in the probability calculation. Additionally, that word must be exactly five characters long. Note: position starts at zero, so the fourth position is the fifth character.
 
 ```python
 word_analysis([5], [4], ["ba"])
@@ -66,6 +66,8 @@ This project was a first for me in terms of using Pandas Dataframes and generati
 
 Join Official Python Discord: https://discord.gg/python
 Mieliestronk's Word List: http://www.mieliestronk.com/wordlist.html 
+
+Update: Yes a tree data structure would be far better than a CSV... add it yourself if you want it.
 
 ***
 # Future:
