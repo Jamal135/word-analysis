@@ -1,5 +1,6 @@
 ''' Creation Date: 27/10/2021 '''
 
+from distutils.command.build import build
 from pandas import DataFrame, Series, read_csv
 from collections import defaultdict
 from tqdm import tqdm
@@ -13,19 +14,23 @@ def load_words(textfile_name: str):
         stripped_line = line.strip()
         wordlist.append(stripped_line)
     textfile.close
-    return set(wordlist)
+    return wordlist
 
 
 def dictionary_build(wordlist: list):
     ''' Returns: Dictionary tree next letter frequency. '''
     data = defaultdict(int)
     for word in tqdm(wordlist):
-        for position, letter in enumerate(word):
-            previous = word[:position + 1]
-            length = len(word)
-            for point, _ in enumerate(previous):
-                segment = previous[point:position]
-                data[length, position, segment, letter] += 1
+        length = len(word)
+        for index in range(length):
+            letter = word[index]
+            previous = word[:index]
+            following = word[index + 1:]
+            for cut in range(len(previous) + 1):
+                a = previous[cut:]
+                for cut in range(len(following) + 1):
+                    b = following[:cut]
+                    data[length, index, a, b, letter] += 1
     return data
 
 
@@ -33,8 +38,8 @@ def dataframe_build(data: dict):
     ''' Returns: Built and named dataframe from dictionary. '''
     dataframe = DataFrame.from_records(Series(data).reset_index())
     dataframe.rename(columns={'level_0': 'Length', 'level_1': 'Position',
-                              'level_2': 'Previous', 'level_3': 'Letter',
-                              0: 'Count'}, inplace=True)
+                              'level_2': 'Previous', 'level_3': 'Following',
+                              'level_4': 'Letter', 0: 'Count'}, inplace=True)
     return dataframe
 
 
@@ -68,6 +73,10 @@ def build_dataframe(output_name: str, textfile_name: str = None):
     dataframe.to_csv(output_name, index=False)
 
 
+build_dataframe("words_short")
+build_dataframe("words_long")
+
+
 def load_CSV(filename: str):
     ''' Returns: CSV loaded to dataframe. '''
     if not filename.endswith(".csv"):
@@ -75,7 +84,8 @@ def load_CSV(filename: str):
     return read_csv(filename)
 
 
-def dataframe_extract(dataframe, length: list, position: list, previous: list):
+def dataframe_extract(dataframe, length: list, position: list, 
+                      previous: list, following: list):
     ''' Returns: Dataframe cut to desired rows. '''
     if not length:
         length = dataframe["Length"].unique()
@@ -83,18 +93,22 @@ def dataframe_extract(dataframe, length: list, position: list, previous: list):
         position = dataframe["Position"].unique()
     if not previous:
         previous = dataframe["Previous"].unique()
+    if not following:
+        following = dataframe["Following"].unique()
     dataframe = dataframe[dataframe["Length"].isin(length) &
                           dataframe["Position"].isin(position) &
-                          dataframe["Previous"].isin(previous)]
+                          dataframe["Previous"].isin(previous) &
+                          dataframe["Following"].isin(following)]
     return dataframe
 
 
-def word_analysis(length: list, position: list, previous: list, datafile: str = "words_short"):
+def word_analysis(length: list, position: list, previous: list, following: list, 
+                  datafile: str = "words_short"):
     ''' Returns: The percentage chance of each next letter given arguments. '''
     dataframe = load_CSV(datafile)
-    cut_dataframe = dataframe_extract(dataframe, length, position, previous)
+    cut_dataframe = dataframe_extract(dataframe, length, position, previous, following)
     print(frequency(cut_dataframe))
 
 
-# Find probability of each letter given any position and any length where last two characters are a & b.
-word_analysis([], [], ["a", "b"], "words_long")
+# Find probability letters given any position, any length where previous chars are a & b and following is a.
+#word_analysis([], [], ["a", "b"], ["a"], "words_long")
