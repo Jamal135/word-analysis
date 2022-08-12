@@ -68,10 +68,6 @@ def build_dataframe(output_name: str, textfile_name: str = None):
     dataframe.to_csv(output_name, index=False)
 
 
-build_dataframe("words_short")
-build_dataframe("words_long")
-
-
 def load_CSV(filename: str):
     ''' Returns: CSV loaded to dataframe. '''
     if not filename.endswith(".csv"):
@@ -100,4 +96,5 @@ def word_analysis(length: list, position: list, previous: list, datafile: str = 
     print(frequency(cut_dataframe))
 
 
+# Find probability of each letter given any position and any length where last two characters are a & b.
 word_analysis([], [], ["a", "b"], "words_long")
