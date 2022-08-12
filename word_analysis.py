@@ -73,10 +73,6 @@ def build_dataframe(output_name: str, textfile_name: str = None):
     dataframe.to_csv(output_name, index=False)
 
 
-build_dataframe("words_short")
-build_dataframe("words_long")
-
-
 def load_CSV(filename: str):
     ''' Returns: CSV loaded to dataframe. '''
     if not filename.endswith(".csv"):
@@ -111,4 +107,4 @@ def word_analysis(length: list, position: list, previous: list, following: list,
 
 
 # Find probability letters given any position, any length where previous chars are a & b and following is a.
-#word_analysis([], [], ["a", "b"], ["a"], "words_long")
+word_analysis([], [], ["a", "b"], ["a"], "words_long")
